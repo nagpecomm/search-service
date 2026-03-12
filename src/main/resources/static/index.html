@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>NAGP Shop</title>
+
+    <style>
+
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            margin:0;
+            background:#f5f5f5;
+        }
+
+        /* HEADER */
+
+        .header{
+            background:#131921;
+            color:white;
+            padding:15px;
+            display:flex;
+            align-items:center;
+        }
+
+        .logo{
+            font-size:22px;
+            font-weight:bold;
+            margin-right:20px;
+        }
+
+        .search-box{
+            flex:1;
+            position:relative;
+        }
+
+        .search-box input{
+            width:100%;
+            padding:10px;
+            font-size:16px;
+        }
+
+        .search-box button{
+            position:absolute;
+            right:0;
+            top:0;
+            bottom:0;
+            padding:0 20px;
+            border:none;
+            background:#febd69;
+            cursor:pointer;
+        }
+
+        /* suggestions */
+
+#suggestions{
+    position:absolute;
+    background:#ffffff;
+    width:100%;
+    border:1px solid #ddd;
+    border-top:none;
+    z-index:1000;
+    color:#111;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2);
+}
+
+.suggest-item{
+    padding:10px;
+    cursor:pointer;
+    color:#111;
+    font-size:14px;
+}
+
+.suggest-item:hover{
+    background:#f3f3f3;
+}
+        /* MAIN LAYOUT */
+
+        .container{
+            display:flex;
+            padding:20px;
+        }
+
+        /* FILTER */
+
+        .filters{
+            width:220px;
+            background:white;
+            padding:15px;
+            border-radius:4px;
+        }
+
+        .filters input, .filters select{
+            width:100%;
+            padding:8px;
+            margin-bottom:10px;
+        }
+
+        /* PRODUCTS GRID */
+
+        .products{
+            flex:1;
+            margin-left:20px;
+            display:grid;
+            grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+            grid-gap:20px;
+        }
+
+        /* PRODUCT CARD */
+
+        .card{
+            background:white;
+            padding:15px;
+            border-radius:6px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .card img{
+            width:100%;
+            height:180px;
+            object-fit:cover;
+        }
+
+        .card h3{
+            font-size:16px;
+        }
+
+        .price{
+            color:#b12704;
+            font-weight:bold;
+        }
+
+        .rating{
+            color:#ffa41c;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="logo">NAGP Shop</div>
+
+    <div class="search-box">
+
+        <input
+                type="text"
+                id="keyword"
+                placeholder="Search products..."
+                onkeyup="loadSuggestions()"
+        />
+
+        <button onclick="search()">Search</button>
+
+        <div id="suggestions"></div>
+
+    </div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
+<div class="container">
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <h3>Filters</h3>
+
+        <label>Min Price</label>
+        <input type="number" id="minPrice"/>
+
+        <label>Max Price</label>
+        <input type="number" id="maxPrice"/>
+
+        <label>Brand</label>
+        <select id="brand">
+            <option value="">All</option>
+            <option value="Apple">Apple</option>
+            <option value="Samsung">Samsung</option>
+            <option value="Sony">Sony</option>
+        </select>
+
+        <button onclick="search()">Apply</button>
+
+    </div>
+
+    <!-- PRODUCTS -->
+
+    <div class="products" id="results"></div>
+
+</div>
+
+<script>
+
+    function search(){
+
+    const keyword = document.getElementById("keyword").value;
+    const minPrice = document.getElementById("minPrice").value;
+    const maxPrice = document.getElementById("maxPrice").value;
+    const brand = document.getElementById("brand").value;
+
+    const url =
+    `http://localhost:9090/api/products/search?keyword=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}&brand=${brand}&page=0&size=20`;
+
+    fetch(url)
+    .then(res => res.json())
+    .then(data => {
+
+    const container = document.getElementById("results");
+    container.innerHTML="";
+
+    data.products.forEach(p => {
+
+    container.innerHTML += `
+    <div class="card">
+
+
+    <img src="${p.imageUrl}" class="product-img"/>
+
+    <h3>${p.name}</h3>
+
+    <div>${p.manufacturer.name}</div>
+
+    <div class="price">$${p.price}</div>
+
+    <div class="rating">⭐ ${p.rating}</div>
+
+    </div>
+    `;
+
+    });
+
+    });
+
+    }
+
+    function loadSuggestions(){
+
+    const keyword = document.getElementById("keyword").value;
+
+    if(keyword.length < 2){
+    document.getElementById("suggestions").innerHTML="";
+    return;
+    }
+
+    fetch(`http://localhost:9090/api/products/suggest?prefix=${keyword}`)
+    .then(res => res.json())
+    .then(data => {
+
+    const box = document.getElementById("suggestions");
+
+    box.innerHTML="";
+
+    data.forEach(item => {
+
+    box.innerHTML += `
+    <div class="suggest-item" onclick="selectSuggestion('${item}')">
+    ${item}
+    </div>
+    `;
+
+    });
+
+    });
+
+    }
+
+    function selectSuggestion(value){
+
+    document.getElementById("keyword").value=value;
+    document.getElementById("suggestions").innerHTML="";
+    search();
+
+    }
+
+    /* Load products automatically */
+window.onload = function() {
+search();
+};
+
+</script>
+
+</body>
+</html>
