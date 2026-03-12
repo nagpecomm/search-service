@@ -1,0 +1,18 @@
+server:
+  port: 9095
+
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: SEARCH-SERVICE
+
+  elasticsearch:
+    uris: https://my-elasticsearch-project-ee92d9.es.us-east-1.aws.elastic.cloud:443
+    api-key: Vk1NWXM1d0IxQlptX0ZCbm5VWnc6dFZ4aUZTNFJDbHYwZy1mNFc5OGxCZw==
+
+logging:
+  level:
+    org.springframework.data.elasticsearch: DEBUG
+    co.elastic.clients: DEBUG

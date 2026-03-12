@@ -206,7 +206,7 @@
     const brand = document.getElementById("brand").value;
 
     const url =
-    `http://localhost:9090/api/products/search?keyword=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}&brand=${brand}&page=0&size=20`;
+    `http://localhost:9095/api/products/search?keyword=${keyword}&minPrice=${minPrice}&maxPrice=${maxPrice}&brand=${brand}&page=0&size=20`;
 
     fetch(url)
     .then(res => res.json())
@@ -249,7 +249,7 @@
     return;
     }
 
-    fetch(`http://localhost:9090/api/products/suggest?prefix=${keyword}`)
+    fetch(`http://localhost:9095/api/products/suggest?prefix=${keyword}`)
     .then(res => res.json())
     .then(data => {
 
