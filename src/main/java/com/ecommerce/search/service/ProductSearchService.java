@@ -1,10 +1,12 @@
 package com.ecommerce.search.service;
 
-import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import
+        co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.JsonData;
 import com.ecommerce.search.dto.ProductDocument;
 import com.ecommerce.search.dto.ProductSearchResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-
+@Slf4j
 @Service
 public class ProductSearchService {
 
@@ -32,6 +34,7 @@ public class ProductSearchService {
             int page,
             int size
     ) {
+        log.info("******** ProductSearchService: calling elastic cloud *********");
 
         Query query = Query.of(q -> q.bool(b -> {
 
